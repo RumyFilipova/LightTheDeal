@@ -1,0 +1,1 @@
+Light the Deal is a web app that support the electrition maintanace company to handle the premises and to support creating the offer for the premises, materials and assistances offered for a customer 
