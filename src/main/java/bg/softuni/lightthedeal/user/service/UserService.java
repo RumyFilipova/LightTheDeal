@@ -20,6 +20,7 @@ import bg.softuni.lightthedeal.user.entity.User;
 import bg.softuni.lightthedeal.user.repository.UserRepository;
 import bg.softuni.lightthedeal.web.DTO.AssistanceServiceRequest;
 import bg.softuni.lightthedeal.web.DTO.RegisterRequestUser;
+import bg.softuni.lightthedeal.web.DTO.UserDto;
 import bg.softuni.lightthedeal.web.DTO.UserUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -56,7 +57,7 @@ public class UserService {
 
     }
 
-    public void register (RegisterRequestUser registerRequestUser) {
+    public UserDto register (RegisterRequestUser registerRequestUser) {
 
         Optional<User> optionalUser = userRepository.findByUserName(registerRequestUser.username());
 
@@ -84,20 +85,24 @@ public class UserService {
     public List<Material> getAllMaterialForUser(User user) {
         return materialRepository.findAllByUser(user);
     }
+
     public List<Assistance> getAllAssistanceForUser(User user){
         return assistanceRepository.findAllByUser(user);
     }
+
     public List<Customer> getAllCustomerForUser(User user) {
-        return customerRepository.findAllByUser(user);
+        return customerRepository.findAllByUsers(user);
     }
+
     public List<Offer> getAllOffersForUSer(User user){
-        return offerRepository.findAllByUser(user);
+        return offerRepository.findByUser(user);
     }
+
     public List<Order> getAllOrdersForUSer(User user){
         return orderRepository.findAllByUser(user);
     }
 
-    // UPDATE OFFER
+    // UPDATE USER
     public User updateUser(UserUpdateRequest request,User user){
 
         user.setUserName(request.userName());
@@ -111,7 +116,12 @@ public class UserService {
 
     }
 
+public void deleteUser(UUID id,User user){
 
+        User user1 = userRepository.findById(id).get();
+
+        userRepository.delete(user1);
+}
 
 
 
