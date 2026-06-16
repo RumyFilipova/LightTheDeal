@@ -15,13 +15,11 @@ import bg.softuni.lightthedeal.offer.service.OfferService;
 import bg.softuni.lightthedeal.order.entity.Order;
 import bg.softuni.lightthedeal.order.repository.OrderRepository;
 import bg.softuni.lightthedeal.order.service.OrderService;
+import bg.softuni.lightthedeal.premise.entity.Premise;
 import bg.softuni.lightthedeal.user.entity.Role;
 import bg.softuni.lightthedeal.user.entity.User;
 import bg.softuni.lightthedeal.user.repository.UserRepository;
-import bg.softuni.lightthedeal.web.DTO.AssistanceServiceRequest;
-import bg.softuni.lightthedeal.web.DTO.RegisterRequestUser;
-import bg.softuni.lightthedeal.web.DTO.UserDto;
-import bg.softuni.lightthedeal.web.DTO.UserUpdateRequest;
+import bg.softuni.lightthedeal.web.DTO.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,11 +35,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // DOUBTS
     private final AssistanceRepository assistanceRepository;
     private final MaterialRepository materialRepository;
-   private final CustomerRepository customerRepository;
-   private final OfferRepository offerRepository;
+    private final CustomerRepository customerRepository;
+    private final OfferRepository offerRepository;
     private final OrderRepository orderRepository;
 
     @Autowired
@@ -57,19 +54,23 @@ public class UserService {
 
     }
 
-    public UserDto register (RegisterRequestUser registerRequestUser) {
+    public void register(RegisterRequestUser registerRequestUser) {
 
-        Optional<User> optionalUser = userRepository.findByUserName(registerRequestUser.username());
+        if(!registerRequestUser.getPassword().equals(registerRequestUser.getConfirmPassword())) {
+            throw new RuntimeException("Passwords do not match");
+
+        }
+        Optional<User> optionalUser = userRepository.findByUsername(registerRequestUser.getUsername());
 
         if (optionalUser.isPresent()) {
-            throw new RuntimeException("User with [%s] username already exists".formatted(registerRequestUser.username()));
+            throw new RuntimeException("User with [%s] username already exists".formatted(registerRequestUser.getUsername()));
         }
 
         User user = User.builder()
-                .userName(registerRequestUser.username())
-                .password(passwordEncoder.encode(registerRequestUser.password()))
-                .email(registerRequestUser.email())
-                .phoneNumber(registerRequestUser.phoneNumber())
+                .username(registerRequestUser.getUsername())
+                .password(passwordEncoder.encode(registerRequestUser.getPassword()))
+                .email(registerRequestUser.getEmail())
+                .phoneNumber(registerRequestUser.getPhoneNumber())
                 .role(Role.USER)
                 .build();
 
@@ -77,16 +78,32 @@ public class UserService {
 
     }
 
-    private Optional<User> getByUsername(User user) {
+    public User login(UserLoginRequest logReg){
 
-        return userRepository.findByUserName(user.getUserName());
+        Optional<User> optUser = userRepository.findByUsername(logReg.getUsername());
+
+        if(optUser.isEmpty()){
+            throw new RuntimeException("The user does not exist");
+        }
+
+        String rawPass =  logReg.getPassword();
+        String hashedPass = optUser.get().getPassword();
+
+        if(!passwordEncoder.matches(rawPass,hashedPass)){
+            throw  new RuntimeException("Incorrect username or password");
+        }
+
+
+        return optUser.get();
     }
+
+
 
     public List<Material> getAllMaterialForUser(User user) {
         return materialRepository.findAllByUser(user);
     }
 
-    public List<Assistance> getAllAssistanceForUser(User user){
+    public List<Assistance> getAllAssistanceForUser(User user) {
         return assistanceRepository.findAllByUser(user);
     }
 
@@ -94,35 +111,64 @@ public class UserService {
         return customerRepository.findAllByUsers(user);
     }
 
-    public List<Offer> getAllOffersForUSer(User user){
+    public List<Offer> getAllOffersForUSer(User user) {
         return offerRepository.findByUser(user);
     }
 
-    public List<Order> getAllOrdersForUSer(User user){
+    public List<Order> getAllOrdersForUSer(User user) {
         return orderRepository.findAllByUser(user);
     }
 
     // UPDATE USER
-    public User updateUser(UserUpdateRequest request,User user){
+    public User updateUser(UserUpdateRequest request, UUID id) {
 
-        user.setUserName(request.userName());
-        user.setEmail(request.email());
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setPhoneNumber(request.phoneNumber());
-        user.setProfilePicture(request.profilePicture());
+        User user = userRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setUsername(request.getUserName());
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setProfilePicture(request.getProfilePicture());
 
         return userRepository.save(user);
 
     }
 
-public void deleteUser(UUID id,User user){
+    public void deleteUser(UUID id, User user) {
 
-        User user1 = userRepository.findById(id).get();
+        User user1 = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
         userRepository.delete(user1);
-}
+    }
 
+
+    public List<User> getAll() {
+
+        return userRepository.findAll();
+    }
+
+    public User getByUsername(String username) {
+
+        return userRepository.findByUsername(username)
+                .orElseThrow(()-> new RuntimeException("User with %s username does not exist".formatted(username)));
+    }
+
+    public User getById(UUID id) {
+
+        return userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("User with id %s does not exist".formatted(id)));
+    }
+
+    public void removeProfilePicture(UUID id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("User with id %s does not exist".formatted(id)));
+
+        user.setProfilePicture(null);
+        userRepository.save(user);
+    }
 
 
 }

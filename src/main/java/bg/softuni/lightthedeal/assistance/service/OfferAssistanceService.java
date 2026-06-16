@@ -32,14 +32,14 @@ public class OfferAssistanceService {
 
         List<OfferAssistance> offeredAssistanceLine = lines.stream()
                 .map(line->{
-                    Assistance assistanceToAdd = assistanceRepository.findByIdAndUser(line.assistanceId(),user)
-                            .orElseThrow(()-> new RuntimeException("Assistance %s is not supported for the user %s".formatted(line.assistanceId(),user.getUserName())));
+                    Assistance assistanceToAdd = assistanceRepository.findByIdAndUser(line.getAssistanceId(),user)
+                            .orElseThrow(()-> new RuntimeException("Assistance %s is not supported for the user %s".formatted(line.getAssistanceId(),user.getUsername())));
 
                     return OfferAssistance.builder()
                             .offer(offer)
                             .user(user)
                             .assistance(assistanceToAdd)
-                            .quantity(line.quantity().doubleValue())
+                            .quantity(line.getQuantity().doubleValue())
                             .priceAtTimeOfOffer(assistanceToAdd.getPricePerUnit())
                             .build();
                 })
@@ -50,11 +50,12 @@ public class OfferAssistanceService {
 
 
     // update assistance
-    public OfferAssistance updateAssistance (UUID id, Double quantity, User user){
+    public OfferAssistance updateQuantity (UUID id, Double quantity, User user){
 
         OfferAssistance oaLine = offerAssistanceRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("The particular request of assistance %s was not found in the offer".formatted(id)));
     oaLine.setQuantity(oaLine.getQuantity() + quantity);
+
         return offerAssistanceRepository.save(oaLine);
     }
 

@@ -1,23 +1,40 @@
 package bg.softuni.lightthedeal.web.DTO;
+import bg.softuni.lightthedeal.materials.entities.Category;
+import bg.softuni.lightthedeal.materials.entities.Unit;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-public record MaterialServiceRequest(
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class MaterialServiceRequest {
 
         @NotBlank(message = "* required")
-        String name,
+        private String name;
 
         @NotBlank(message = "* required")
-        String type,
+        private String type;
 
-        String description,
+        @NotNull(message = "* required")
+        private Double quantity;
+
+        private String description;
 
         @NotBlank(message = "* required")
-        String brand,
+        private String brand;
 
-        @NotBlank(message = "* required")
-        BigDecimal singlePrice
+        private Category category;
+        private Unit unit;
 
-) {
+        @NotNull(message = "* required")
+        private BigDecimal singlePrice;
+
+
 }
+

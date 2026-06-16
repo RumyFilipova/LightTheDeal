@@ -1,20 +1,18 @@
 package bg.softuni.lightthedeal.web.DTO;
 
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 
-public record UserLoginRequest(
+public class UserLoginRequest {
     @Size(min = 6, message = "Username must be at least 6 characters")
-    String username,
+    private String username;
 
     @Size(min = 6, message = "password must be at least 6 characters")
-    String password
-
-) {
+    private String password;
 }

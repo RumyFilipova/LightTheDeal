@@ -1,19 +1,30 @@
 package bg.softuni.lightthedeal.web.DTO;
+import bg.softuni.lightthedeal.assistance.entity.Category;
+import bg.softuni.lightthedeal.assistance.entity.Unit;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-public record AssistanceServiceRequest(
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class AssistanceServiceRequest
+{
 
         @NotBlank(message = "* required")
-        String name,
+        private String name;
 
-        String activityDescription,
+        private String description;
 
-        @NotBlank(message = "Price is required")
+        @NotNull(message = "Price is required")
         @DecimalMin(value = "0.01", message = "Price must be positive")
-        BigDecimal pricePerUnit
+        private BigDecimal pricePerUnit;
 
-) {
+        private Category category;
+        private Unit unit;
 }

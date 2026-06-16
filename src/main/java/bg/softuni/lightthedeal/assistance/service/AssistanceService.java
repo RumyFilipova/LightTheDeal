@@ -1,5 +1,4 @@
 package bg.softuni.lightthedeal.assistance.service;
-
 import bg.softuni.lightthedeal.assistance.entity.Assistance;
 import bg.softuni.lightthedeal.assistance.repository.AssistanceRepository;
 import bg.softuni.lightthedeal.user.entity.User;
@@ -22,12 +21,17 @@ public class AssistanceService {
     }
 
     public  void createAssistance(AssistanceServiceRequest assistanceServiceRequest, User user) {
+
         Assistance assistance = Assistance.builder()
-                .name(assistanceServiceRequest.name())
-                .description(assistanceServiceRequest.activityDescription())
-                .pricePerUnit(assistanceServiceRequest.pricePerUnit())
+                .user(user)
+                .name(assistanceServiceRequest.getName())
+                .category(assistanceServiceRequest.getCategory())
+                .description(assistanceServiceRequest.getDescription())
+                .unit(assistanceServiceRequest.getUnit())
+                .pricePerUnit(assistanceServiceRequest.getPricePerUnit())
                         .build();
-assistanceRepository.save(assistance);
+
+        assistanceRepository.save(assistance);
     }
 
     public List<Assistance> getAllAssistanceForUSer(User user) {
@@ -37,6 +41,7 @@ assistanceRepository.save(assistance);
     public Assistance getByIdAndUser(UUID id, User user) {
         Assistance assistance = assistanceRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Assistance %s not found".formatted(id)));
+
         return assistance;
     }
 
@@ -44,9 +49,9 @@ assistanceRepository.save(assistance);
     public Assistance updateAssistance(AssistanceUpdateRequest assistanceUpdateRequest, UUID id,User user) {
         Assistance assistance = getByIdAndUser(id,user);
 
-        assistance.setName(assistanceUpdateRequest.name());
-        assistance.setDescription(assistanceUpdateRequest.activityDescription());
-        assistance.setPricePerUnit(assistanceUpdateRequest.pricePerUnit());
+        assistance.setName(assistanceUpdateRequest.getName());
+        assistance.setDescription(assistanceUpdateRequest.getActivityDescription());
+        assistance.setPricePerUnit(assistanceUpdateRequest.getPricePerUnit());
 
         return assistanceRepository.save(assistance);
     }
