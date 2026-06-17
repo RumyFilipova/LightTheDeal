@@ -36,28 +36,40 @@ public class PremiseController {
         this.userProperties = userProperties;
     }
 
-    @GetMapping
+    @GetMapping()
     public ModelAndView getPremise() {
 
         // TODO: replace with @AuthenticationPrincipal
         User user = userService.getByUsername(userProperties.getDefaultUser().getUsername());
 
-        List<Premise> premises = premiseService.getAllForUser(user);
         List<Customer> customers = customerService.getAllCustomersForUser(user);
 
         ModelAndView modelAndView = new ModelAndView();
 
         modelAndView.setViewName("premise");
 
-        modelAndView.addObject("premises", premises);
         modelAndView.addObject("customers", customers);
         modelAndView.addObject("premiseRequest", new PremiseServiceRequest());
         modelAndView.addObject("premiseUpdateRequest", new PremiseUpdateRequest());
+        modelAndView.addObject("premiseList", premiseService.getAllPremisesResponsesForTheUser(user));
         modelAndView.addObject("premiseTypes", PremiseType.values());
         modelAndView.addObject("userId", user.getId());
 
         return modelAndView;
     }
+
+//    @GetMapping("/{id}/edit")
+//    public ModelAndView updatePremise(@PathVariable UUID id) {
+//
+//        User user = userService.getByUsername(userProperties.getDefaultUser().getUsername());
+//        Premise premise = premiseService.getByIdAndUser(id, user);
+//
+//        List<Premise> premises = premiseService.getAllForUser(user);
+//        List<Customer> customers = customerService.getAllCustomersForUser(user);
+//
+//        PremiseUpdateRequest
+//
+//    }
 
     @PostMapping
     public String addPremise(@ModelAttribute("premiseRequest") PremiseServiceRequest premiseServiceRequest){
@@ -68,7 +80,15 @@ public class PremiseController {
         return "redirect:/premise";
     }
 
+@PostMapping ("/{id}/delete")
+public String removeClient(@PathVariable UUID id){
 
+    //replace with session
+    User user = userService.getByUsername(userProperties.getDefaultUser().getUsername());
+
+    premiseService.deletePremise(id,user);
+    return "redirect:/premise";
+}
 
    /*
     public String addPremise(){}
