@@ -1,11 +1,11 @@
 package bg.softuni.lightthedeal.offer.entity;
 
-import bg.softuni.lightthedeal.assistance.entity.OfferAssistance;
+import bg.softuni.lightthedeal.assistance.entity.OfferAssistanceLine;
 import bg.softuni.lightthedeal.customer.entity.Customer;
+import bg.softuni.lightthedeal.materials.entities.OfferMaterialLine;
 import bg.softuni.lightthedeal.order.entity.Order;
 import bg.softuni.lightthedeal.premise.entity.Premise;
 import bg.softuni.lightthedeal.user.entity.User;
-import bg.softuni.lightthedeal.materials.entities.OfferMaterial;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +32,9 @@ public class Offer {
 
     @Column(name = "offer_number")
     private String offerNumber;
+
+    @Column(name = "offer_name")
+    private String offerName;
 
     @Column(name = "created_on")
     private LocalDateTime createdOn;
@@ -70,10 +73,10 @@ public class Offer {
     private Order order;
 
     @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OfferMaterial> materials = new ArrayList<>();
+    private List<OfferMaterialLine> materials = new ArrayList<>();
 
     @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List <OfferAssistance> assistanceItems = new ArrayList<>();
+    private List <OfferAssistanceLine> assistanceItems = new ArrayList<>();
 
 
 }

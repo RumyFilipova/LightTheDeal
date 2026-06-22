@@ -14,19 +14,16 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OfferMaterialLine{
+
+public class MaterialLineRequest{
 
         @NotNull
         private UUID materialId;
-        @NotBlank(message = "* required")
-        private String name;
-        @NotBlank(message = "* required")
-        private String type;
 
         @NotNull(message = "* required")
         @Positive(message = "Quantity must be greater than 0")
         private Double quantity;
-
+        private String description;
 
 
 }

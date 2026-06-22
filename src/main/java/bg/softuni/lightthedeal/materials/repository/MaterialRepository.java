@@ -1,5 +1,4 @@
 package bg.softuni.lightthedeal.materials.repository;
-
 import bg.softuni.lightthedeal.materials.entities.Material;
 import bg.softuni.lightthedeal.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +14,6 @@ public interface MaterialRepository extends JpaRepository<Material, UUID> {
     List<Material> findAllByUser(User user);
 
     Optional <Material> findByIdAndUser(UUID id, User user);
+
+
 }
